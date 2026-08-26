@@ -1,25 +1,22 @@
-// utils/api.js
 import axios from "axios";
 
-// In local dev, VITE_API_URL is unset and requests go to "/api", which
-// Vite's dev proxy forwards to the backend (see vite.config.js).
-// In production (Vercel), set VITE_API_URL to your deployed Render URL,
-// e.g. https://your-app.onrender.com — no trailing slash.
-const API_ORIGIN = import.meta.env.VITE_API_URL || "";
+// 1. جلب الرابط وإزالة أي /api أو أسلاش زائدة في نهايته لمنع التكرار نهائياً
+const rawEnv = import.meta.env.VITE_API_URL || "https://the-unique-one.onrender.com";
+const API_ORIGIN = rawEnv.replace(/\/api\/?$/, "").replace(/\/$/, "");
 
+// 2. ضبط baseURL ليشمل /api مرة واحدة فقط وبشكل صحيح
 const api = axios.create({
   baseURL: `${API_ORIGIN}/api`
 });
 
+// 3. إضافة التوكن تلقائياً مع كل طلب (لو متاح)
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("admin_token");
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
-// Uploads a File to the backend's local disk storage and returns its
-// public URL (e.g. "/uploads/169...-abc.jpg"), which can be stored
-// directly in a product's image_* / common_image field.
+// رفع الصور إلى الـ Backend
 export async function uploadImage(file) {
   const formData = new FormData();
   formData.append("image", file);
@@ -27,12 +24,10 @@ export async function uploadImage(file) {
   const res = await api.post("/upload", formData, {
     headers: { "Content-Type": "multipart/form-data" }
   });
-  return res.data.url; // e.g. "/uploads/xyz.jpg"
+  return res.data.url;
 }
 
-// Resolves an image path returned by the backend (e.g. "/uploads/xyz.jpg")
-// into an absolute URL that works from a different origin (Vercel frontend
-// -> Render backend). Full external URLs (http://…) are returned unchanged.
+// تحويل مسارات الصور إلى روابط كاملة
 export function resolveImageUrl(pathOrUrl) {
   if (!pathOrUrl) return null;
   if (/^https?:\/\//i.test(pathOrUrl)) return pathOrUrl;
