@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: product-showcase-backend
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: FRONTEND_ORIGIN
+        sync: false # set this to your Vercel URL after the frontend is deployed
+    # NOTE: Render's free plan has an EPHEMERAL filesystem — database.db and
+    # anything in uploads/ are wiped on every deploy or restart. To persist
+    # them, attach a paid persistent disk (Render dashboard -> your service
+    # -> Disks) mounted at /opt/render/project/src/backend/data, then point
+    # DB_DIR and UPLOAD_DIR (see db/init.js and routes/upload.js) at it via
+    # env vars, or upgrade the plan below and uncomment:
+    # disk:
+    #   name: product-showcase-data
+    #   mountPath: /opt/render/project/src/backend/data
+    #   sizeGB: 1
