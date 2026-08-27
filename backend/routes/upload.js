@@ -7,7 +7,6 @@ const path = require("path");
 const crypto = require("crypto");
 const express = require("express");
 const multer = require("multer");
-const { requireAuth } = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -34,8 +33,8 @@ const upload = multer({
   }
 });
 
-// POST /api/upload  (field name: "image")  — admin only
-router.post("/", requireAuth, (req, res) => {
+// POST /api/upload  (field name: "image")
+router.post("/", (req, res) => {
   upload.single("image")(req, res, (err) => {
     if (err) return res.status(400).json({ error: err.message });
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
