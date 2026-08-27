@@ -3,6 +3,7 @@
 // served statically at /uploads/<filename> (see server.js). No cloud
 // storage, no API keys — just the local disk.
 
+const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const express = require("express");
@@ -12,6 +13,11 @@ const router = express.Router();
 
 const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(__dirname, "..", "uploads");
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+
+// التأكد من وجود مجلد التحميلات تلقائياً لتجنب خطأ ENOENT
+if (!fs.existsSync(UPLOAD_DIR)) {
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+}
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, UPLOAD_DIR),
