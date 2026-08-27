@@ -16,13 +16,16 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// رفع الصور إلى الـ Backend
+// رفع الصور إلى الـ Backend (مع إلغاء التوكن تماماً لهذا الطلب)
 export async function uploadImage(file) {
   const formData = new FormData();
   formData.append("image", file);
 
   const res = await api.post("/upload", formData, {
-    headers: { "Content-Type": "multipart/form-data" }
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: "" // مسح التوكن لتجنب اعتراض السيرفر عليه
+    }
   });
   return res.data.url;
 }
