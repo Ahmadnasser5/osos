@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useLanguage } from "../context/LanguageContext";
 
 // Set these to your real business contact details.
-const WHATSAPP_NUMBER = "15551234567"; // digits only, no + or spaces
+const WHATSAPP_NUMBER = "0566778283"; // digits only, no + or spaces
 const TELEGRAM_USERNAME = "your_telegram_username";
 
 export default function SmartContactButton({ productTitle }) {
